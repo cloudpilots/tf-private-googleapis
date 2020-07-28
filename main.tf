@@ -52,6 +52,10 @@ resource "google_dns_managed_zone" "googleapis" {
       network_url = var.network_url
     }
   }
+
+  depends_on = [
+    google_project_service.dns
+  ]
 }
 
 resource "google_dns_record_set" "private" {
@@ -104,6 +108,11 @@ resource "google_dns_managed_zone" "more_zones" {
       network_url = var.network_url
     }
   }
+
+  depends_on = [
+    google_project_service.dns
+  ]
+
 }
 
 resource "google_dns_record_set" "more_zones_a" {
