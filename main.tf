@@ -36,6 +36,8 @@ locals {
   private = ! var.restricted_access
   cname   = local.private ? "private" : "restricted"
   rrdata  = local.private ? local.private_ips : local.restricted_ips
+
+  network_urls = concat(var.network_urls, var.network_url != null ? [var.network_url] : [])
 }
 
 resource "google_dns_managed_zone" "googleapis" {
@@ -48,8 +50,11 @@ resource "google_dns_managed_zone" "googleapis" {
   visibility = "private"
 
   private_visibility_config {
-    networks {
-      network_url = var.network_url
+    dynamic "networks" {
+      for_each = toset(local.network_urls)
+      content {
+        network_url = networks.value
+      }
     }
   }
 
@@ -104,11 +109,13 @@ resource "google_dns_managed_zone" "more_zones" {
   visibility = "private"
 
   private_visibility_config {
-    networks {
-      network_url = var.network_url
+    dynamic "networks" {
+      for_each = toset(local.network_urls)
+      content {
+        network_url = networks.value
+      }
     }
   }
-
   depends_on = [
     google_project_service.dns
   ]
