@@ -147,3 +147,22 @@ resource "google_dns_record_set" "more_zones_cname" {
     google_dns_managed_zone.more_zones,
   ]
 }
+
+resource "google_compute_route" "googleapis-private-route" {
+  for_each         = toset(local.network_urls)
+  name             = "${split("/","${each.value}")[4]}-private-googleapis"
+  dest_range       = "199.36.153.8/30"
+  network          = each.value
+  priority         = 100
+  next_hop_gateway = "default-internet-gateway"
+}
+
+resource "google_compute_route" "googleapis-restricted-route" {
+  for_each         = toset(local.network_urls)
+  name             = "${split("/","${each.value}")[4]}-restricted-googleapis"
+  dest_range       = "199.36.153.4/30"
+  network          = each.value
+  priority         = 100
+  next_hop_gateway = "default-internet-gateway"
+}
+
