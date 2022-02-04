@@ -147,3 +147,4 @@ resource "google_dns_record_set" "more_zones_cname" {
     google_dns_managed_zone.more_zones,
   ]
 }
+
